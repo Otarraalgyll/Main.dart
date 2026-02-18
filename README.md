@@ -18,86 +18,82 @@ void main() {
   bool isRunning = true;
 
   while (isRunning) {
-    print('\nInventory System');
+    print('\nSelling ITEAMS');
     print('1. Add Product');
     print('2. View Products');
     print('3. Sell Product');
     print('4. Exit');
     stdout.write('Enter choice: ');
     String? choice = stdin.readLineSync();
-switch (choice) {
-      case '1':
-        // Add Product
-        stdout.write('Enter product name: ');
-        String name = stdin.readLineSync() ?? '';
 
-        stdout.write('Enter price: ');
-        double price = double.tryParse(stdin.readLineSync() ?? '0') ?? 0;
+    // ADD PRODUCT
+    if (choice == '1') {
+      stdout.write('Enter product name: ');
+      String name = stdin.readLineSync() ?? '';
 
-        stdout.write('Enter quantity: ');
-        int quantity = int.tryParse(stdin.readLineSync() ?? '0') ?? 0;
+      stdout.write('Enter price: ');
+      double price = double.tryParse(stdin.readLineSync() ?? '0') ?? 0;
 
-        inventory.add(Product(name, price, quantity));
-        print('Product added successfully.');
-        break;
+      stdout.write('Enter quantity: ');
+      int quantity = int.tryParse(stdin.readLineSync() ?? '0') ?? 0;
 
-      case '2':
-        // View Products
-        if (inventory.isEmpty) {
-          print('No products in inventory.');
-        } else {
-          print('\n| Product Name      | Price    | Quantity |');
-          print('|-------------------|----------|----------|');
-          for (var product in inventory) {
-            print(product);
-          }
+      inventory.add(Product(name, price, quantity));
+      print('Product added successfully.');
+
+    // VIEW PRODUCTS
+    } else if (choice == '2') {
+      if (inventory.isEmpty) {
+        print('Inventory is empty.');
+      } else {
+        print('\n| Name             |   Price | Quantity |');
+        print('-------------------------------------------');
+        for (var product in inventory) {
+          print(product);
         }
-        break;
+      }
 
-      case '3':
-        // Sell Product
-        if (inventory.isEmpty) {
-          print('No products available to sell.');
-          break;
-        }
+    // SELL PRODUCT
+    } else if (choice == '3') {
+      stdout.write('Enter product name to sell: ');
+      String name = stdin.readLineSync() ?? '';
 
-        stdout.write('Enter product name to sell: ');
-        String name = stdin.readLineSync() ?? '';
-
-        Product? product = inventory.firstWhere(
+      Product? product;
+      try {
+        product = inventory.firstWhere(
           (p) => p.name.toLowerCase() == name.toLowerCase(),
-          orElse: () => Product('', 0, 0),
         );
+      } catch (e) {
+        product = null;
+      }
 
-        if (product.name.isEmpty) {
-          print('Product not found.');
-          break;
-        }
+      if (product == null) {
+        print('Product not found.');
+        continue;
+      }
 
-        stdout.write('Enter quantity to sell: ');
-        int qtyToSell = int.tryParse(stdin.readLineSync() ?? '0') ?? 0;
+      stdout.write('Enter quantity to sell: ');
+      int qtyToSell = int.tryParse(stdin.readLineSync() ?? '0') ?? 0;
 
-        if (qtyToSell <= 0) {
-          print('Invalid quantity.');
-        } else if (product.quantity >= qtyToSell) {
-          product.quantity -= qtyToSell;
-          double amount = product.price * qtyToSell;
-          print('Sold $qtyToSell ${product.name}(s). Amount: ${amount.toStringAsFixed(2)}');
-          print('Remaining stock: ${product.quantity}');
-        } else {
-          print('Insufficient stock. Only ${product.quantity} available.');
-        }
-        break;
+      if (qtyToSell <= 0) {
+        print('Invalid quantity.');
+      } else if (product.quantity >= qtyToSell) {
+        product.quantity -= qtyToSell;
+        double amount = product.price * qtyToSell;
+        print('Sold $qtyToSell ${product.name}(s). Amount: ${amount.toStringAsFixed(2)}');
+        print('Remaining stock: ${product.quantity}');
+      } else {
+        print('Insufficient stock. Only ${product.quantity} available.');
+      }
 
-      case '4':
-        // Exit
-        isRunning = false;
-        print('Exiting...');
-        break;
+    // EXIT 
+    } else if (choice == '4') {
+      print('Exiting program...');
+      isRunning = false;
 
-      default:
-        print('Invalid choice. Please try again.');
+    } else {
+      print('Invalid choice. Try again.');
     }
   }
 }
+
     
