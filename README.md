@@ -1,43 +1,27 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MobileApp());
-}
-
-class MobileApp extends StatelessWidget {
-  const MobileApp({super.key});
+class NavigationWrapper extends StatefulWidget {
+  const NavigationWrapper({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainNavigation(),
-    );
-  }
+  State<NavigationWrapper> createState() => _NavigationWrapperState();
 }
 
-class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+class _NavigationWrapperState extends State<NavigationWrapper> {
+  int _currentIndex = 0;
 
-  @override
-  State<MainNavigation> createState() => _MainNavigationState();
-}
-
-class _MainNavigationState extends State<MainNavigation> {
-  int _selectedIndex = 0;
-
-  // List of pages for navigation
+  // Define the pages as a list of widgets
   final List<Widget> _pages = [
-    const Center(child: Text('Home Page', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('Profile Page', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('Messages Page', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('Settings Page', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('Home Screen')),
+    const Center(child: Text('Profile Screen')),
+    const Center(child: Text('Message Screen')),
+    const Center(child: Text('Settings Screen')),
   ];
 
-  void _onItemTapped(int index) {
+  // Helper to handle navigation from both Drawer and BottomNav
+  void _updateIndex(int index) {
     setState(() {
-      _selectedIndex = index;
+      _currentIndex = index;
     });
   }
 
@@ -46,58 +30,36 @@ class _MainNavigationState extends State<MainNavigation> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('AppsDev 2A'),
+        centerTitle: true,
       ),
-      // Drawer with Navigation Items
+      // Side Drawer Navigation
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+              decoration: BoxDecoration(color: Colors.indigo),
+              child: Text('Navigation', style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                _onItemTapped(0);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Profile'),
-              onTap: () {
-                _onItemTapped(1);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.message),
-              title: const Text('Messages'),
-              onTap: () {
-                _onItemTapped(2);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                _onItemTapped(3);
-                Navigator.pop(context);
-              },
-            ),
+            _buildDrawerItem(Icons.home, 'Home', 0),
+            _buildDrawerItem(Icons.person, 'Profile', 1),
+            _buildDrawerItem(Icons.message, 'Message', 2),
+            _buildDrawerItem(Icons.settings, 'Settings', 3),
           ],
         ),
       ),
-      // Display the selected page
-      body: _pages[_selectedIndex],
+      // Main Content Area
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: _pages[_currentIndex],
+      ),
       // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed, // Essential for 4+ items
+        currentIndex: _currentIndex,
+        onTap: _updateIndex,
+        selectedItemColor: Colors.indigo,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
@@ -105,6 +67,19 @@ class _MainNavigationState extends State<MainNavigation> {
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
+    );
+  }
+
+  // Widget builder for Drawer items to reduce code repetition
+  Widget _buildDrawerItem(IconData icon, String title, int index) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      selected: _currentIndex == index,
+      onTap: () {
+        _updateIndex(index);
+        Navigator.pop(context); // Closes the drawer
+      },
     );
   }
 }
