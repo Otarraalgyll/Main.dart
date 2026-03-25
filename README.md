@@ -1,99 +1,110 @@
-import 'dart:io';
-
-class Product {
-  String name;
-  double price;
-  int quantity;
-
-  Product(this.name, this.price, this.quantity);
-
-  @override
-  String toString() {
-    return '| ${name.padRight(16)} | ${price.toStringAsFixed(2).padLeft(8)} | ${quantity.toString().padLeft(8)} |';
-  }
-}
+import 'package:flutter/material.dart';
 
 void main() {
-  List<Product> inventory = [];
-  bool isRunning = true;
+  runApp(const MobileApp());
+}
 
-  while (isRunning) {
-    print('\nSelling ITEAMS');
-    print('1. Add Product');
-    print('2. View Products');
-    print('3. Sell Product');
-    print('4. Exit');
-    stdout.write('Enter choice: ');
-    String? choice = stdin.readLineSync();
+class MobileApp extends StatelessWidget {
+  const MobileApp({super.key});
 
-    // ADD PRODUCT
-    if (choice == '1') {
-      stdout.write('Enter product name: ');
-      String name = stdin.readLineSync() ?? '';
-
-      stdout.write('Enter price: ');
-      double price = double.tryParse(stdin.readLineSync() ?? '0') ?? 0;
-
-      stdout.write('Enter quantity: ');
-      int quantity = int.tryParse(stdin.readLineSync() ?? '0') ?? 0;
-
-      inventory.add(Product(name, price, quantity));
-      print('Product added successfully.');
-
-    // VIEW PRODUCTS
-    } else if (choice == '2') {
-      if (inventory.isEmpty) {
-        print('Inventory is empty.');
-      } else {
-        print('\n| Name             |   Price | Quantity |');
-        print('-------------------------------------------');
-        for (var product in inventory) {
-          print(product);
-        }
-      }
-
-    // SELL PRODUCT
-    } else if (choice == '3') {
-      stdout.write('Enter product name to sell: ');
-      String name = stdin.readLineSync() ?? '';
-
-      Product? product;
-      try {
-        product = inventory.firstWhere(
-          (p) => p.name.toLowerCase() == name.toLowerCase(),
-        );
-      } catch (e) {
-        product = null;
-      }
-
-      if (product == null) {
-        print('Product not found.');
-        continue;
-      }
-
-      stdout.write('Enter quantity to sell: ');
-      int qtyToSell = int.tryParse(stdin.readLineSync() ?? '0') ?? 0;
-
-      if (qtyToSell <= 0) {
-        print('Invalid quantity.');
-      } else if (product.quantity >= qtyToSell) {
-        product.quantity -= qtyToSell;
-        double amount = product.price * qtyToSell;
-        print('Sold $qtyToSell ${product.name}(s). Amount: ${amount.toStringAsFixed(2)}');
-        print('Remaining stock: ${product.quantity}');
-      } else {
-        print('Insufficient stock. Only ${product.quantity} available.');
-      }
-
-    // EXIT 
-    } else if (choice == '4') {
-      print('Exiting program...');
-      isRunning = false;
-
-    } else {
-      print('Invalid choice. Try again.');
-    }
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const MainNavigation(),
+    );
   }
 }
 
-    
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
+
+  @override
+  State<MainNavigation> createState() => _MainNavigationState();
+}
+
+class _MainNavigationState extends State<MainNavigation> {
+  int _selectedIndex = 0;
+
+  // List of pages for navigation
+  final List<Widget> _pages = [
+    const Center(child: Text('Home Page', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('Profile Page', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('Messages Page', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('Settings Page', style: TextStyle(fontSize: 24))),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('AppsDev 2A'),
+      ),
+      // Drawer with Navigation Items
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () {
+                _onItemTapped(0);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: () {
+                _onItemTapped(1);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.message),
+              title: const Text('Messages'),
+              onTap: () {
+                _onItemTapped(2);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                _onItemTapped(3);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+      // Display the selected page
+      body: _pages[_selectedIndex],
+      // Bottom Navigation Bar
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed, // Essential for 4+ items
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Message'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        ],
+      ),
+    );
+  }
+}
