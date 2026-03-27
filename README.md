@@ -1,5 +1,21 @@
 import 'package:flutter/material.dart';
 
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: NavigationWrapper(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
 class NavigationWrapper extends StatefulWidget {
   const NavigationWrapper({super.key});
 
@@ -10,15 +26,13 @@ class NavigationWrapper extends StatefulWidget {
 class _NavigationWrapperState extends State<NavigationWrapper> {
   int _currentIndex = 0;
 
-  // Define the pages as a list of widgets
-  final List<Widget> _pages = [
-    const Center(child: Text('Home Screen')),
-    const Center(child: Text('Profile Screen')),
-    const Center(child: Text('Message Screen')),
-    const Center(child: Text('Settings Screen')),
+  final List<Widget> _pages = const [
+    Center(child: Text('Home Screen')),
+    Center(child: Text('Profile Screen')),
+    Center(child: Text('Message Screen')),
+    Center(child: Text('Settings Screen')),
   ];
 
-  // Helper to handle navigation from both Drawer and BottomNav
   void _updateIndex(int index) {
     setState(() {
       _currentIndex = index;
@@ -29,17 +43,19 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AppsDev 2A'),
+        title: const Text('AppsDev Otarra2A'),
         centerTitle: true,
       ),
-      // Side Drawer Navigation
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.indigo),
-              child: Text('Navigation', style: TextStyle(color: Colors.white, fontSize: 24)),
+              decoration: BoxDecoration(color: Color.fromARGB(119, 71, 38, 38)),
+              child: Text(
+                'Navigation',
+                style: TextStyle(color: Color.fromARGB(255, 255, 252, 252), fontSize: 24),
+              ),
             ),
             _buildDrawerItem(Icons.home, 'Home', 0),
             _buildDrawerItem(Icons.person, 'Profile', 1),
@@ -48,17 +64,15 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
           ],
         ),
       ),
-      // Main Content Area
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: _pages[_currentIndex],
       ),
-      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _updateIndex,
-        selectedItemColor: Colors.indigo,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: const Color.fromARGB(255, 66, 57, 165),
+        unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -70,7 +84,6 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
     );
   }
 
-  // Widget builder for Drawer items to reduce code repetition
   Widget _buildDrawerItem(IconData icon, String title, int index) {
     return ListTile(
       leading: Icon(icon),
@@ -78,7 +91,7 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
       selected: _currentIndex == index,
       onTap: () {
         _updateIndex(index);
-        Navigator.pop(context); // Closes the drawer
+        Navigator.pop(context);
       },
     );
   }
